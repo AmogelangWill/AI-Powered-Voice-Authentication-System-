@@ -1,11 +1,27 @@
 import io
 import math
 import wave
+from pathlib import Path
 
 import numpy as np
 import pytest
+import pytest_asyncio
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+
+Path(".env").write_text(
+    "DATABASE_URL=sqlite+aiosqlite:///./test_voiceauth.db\n"
+    "JWT_SECRET_KEY=test-secret\n"
+    "JWT_ALGORITHM=HS256\n"
+    "ACCESS_TOKEN_EXPIRE_MINUTES=15\n"
+    "REFRESH_TOKEN_EXPIRE_DAYS=7\n"
+    "MODEL_STORAGE_PATH=./models\n"
+    "VOICE_VERIFICATION_THRESHOLD=-500.0\n"
+    "ALLOWED_ORIGINS=http://localhost:5173\n"
+    "MAX_AUDIO_DURATION_SECONDS=10\n"
+    "MIN_AUDIO_DURATION_SECONDS=2\n"
+    "ENVIRONMENT=test\n"
+)
 
 from app.config import Settings
 from app.database.db import Base, get_db
@@ -61,7 +77,7 @@ def short_wav_bytes() -> bytes:
     return buffer.getvalue()
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest_asyncio.fixture(scope="session", autouse=True)
 async def setup_db():
     engine = create_async_engine(TEST_DATABASE_URL, future=True)
     async with engine.begin() as conn:
