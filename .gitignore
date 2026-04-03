@@ -24,6 +24,7 @@ data/
 *.webm
 *.ogg
 *.mp3
+*.db
 
 # OS/editor
 .DS_Store
