@@ -9,6 +9,12 @@ export function useAudioRecorder(maxSeconds = 10) {
   const [error, setError] = useState('')
   const [seconds, setSeconds] = useState(0)
 
+  const stopRecording = useCallback(() => {
+    if (!mediaRecorderRef.current || mediaRecorderRef.current.state === 'inactive') return
+    mediaRecorderRef.current.stop()
+    setIsRecording(false)
+  }, [])
+
   useEffect(() => {
     let timer
     if (isRecording) {
@@ -23,7 +29,7 @@ export function useAudioRecorder(maxSeconds = 10) {
       }, 1000)
     }
     return () => window.clearInterval(timer)
-  }, [isRecording, maxSeconds])
+  }, [isRecording, maxSeconds, stopRecording])
 
   const startRecording = useCallback(async () => {
     setError('')
@@ -49,12 +55,6 @@ export function useAudioRecorder(maxSeconds = 10) {
       setError('Microphone access denied or unavailable.')
       setIsRecording(false)
     }
-  }, [])
-
-  const stopRecording = useCallback(() => {
-    if (!mediaRecorderRef.current || mediaRecorderRef.current.state === 'inactive') return
-    mediaRecorderRef.current.stop()
-    setIsRecording(false)
   }, [])
 
   return { isRecording, startRecording, stopRecording, audioBlob, error, seconds }

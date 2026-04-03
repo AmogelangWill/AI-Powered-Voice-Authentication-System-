@@ -1,7 +1,7 @@
 import io
 import math
+import os
 import wave
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -9,26 +9,24 @@ import pytest_asyncio
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-Path(".env").write_text(
-    "DATABASE_URL=sqlite+aiosqlite:///./test_voiceauth.db\n"
-    "JWT_SECRET_KEY=test-secret\n"
-    "JWT_ALGORITHM=HS256\n"
-    "ACCESS_TOKEN_EXPIRE_MINUTES=15\n"
-    "REFRESH_TOKEN_EXPIRE_DAYS=7\n"
-    "MODEL_STORAGE_PATH=./models\n"
-    "VOICE_VERIFICATION_THRESHOLD=-500.0\n"
-    "ALLOWED_ORIGINS=http://localhost:5173\n"
-    "MAX_AUDIO_DURATION_SECONDS=10\n"
-    "MIN_AUDIO_DURATION_SECONDS=2\n"
-    "ENVIRONMENT=test\n"
-)
-
 from app.config import Settings
 from app.database.db import Base, get_db
 from app.main import app
 
 
 TEST_DATABASE_URL = "sqlite+aiosqlite:///./test_voiceauth.db"
+
+os.environ.setdefault("DATABASE_URL", TEST_DATABASE_URL)
+os.environ.setdefault("JWT_SECRET_KEY", "test-secret")
+os.environ.setdefault("JWT_ALGORITHM", "HS256")
+os.environ.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", "15")
+os.environ.setdefault("REFRESH_TOKEN_EXPIRE_DAYS", "7")
+os.environ.setdefault("MODEL_STORAGE_PATH", "./models")
+os.environ.setdefault("VOICE_VERIFICATION_THRESHOLD", "-500.0")
+os.environ.setdefault("ALLOWED_ORIGINS", "http://localhost:5173")
+os.environ.setdefault("MAX_AUDIO_DURATION_SECONDS", "10")
+os.environ.setdefault("MIN_AUDIO_DURATION_SECONDS", "2")
+os.environ.setdefault("ENVIRONMENT", "test")
 
 
 def _test_settings() -> Settings:

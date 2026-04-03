@@ -32,7 +32,7 @@ async def login(
     settings: Settings = Depends(get_settings),
 ) -> LoginResponse:
     # Request is required by slowapi for per-IP rate limiting.
-    del request
+    _ = request
     access_token, refresh_token = await login_user(db, username, audio_file, settings)
     return LoginResponse(access_token=access_token, refresh_token=refresh_token)
 
